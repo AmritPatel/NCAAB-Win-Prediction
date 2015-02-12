@@ -59,7 +59,7 @@
   <article data-timings="">
     <p>This prediction model takes two teams as input and will output the predicted winner. The prediction model is trained with <a href="http://espn.go.com/mens-college-basketball/bpi">daily ESPN BPI data</a> and a recent performance indicator.</p>
 
-<p>The recent performance indicator takes the most recent BPI for a given team and divides it by the average BPI for that team over a given time period. A larger and more positive value indicates a team that has recently been performing well, while a larger and more negative value indicates a team that has recently been performing poorly.</p>
+<p>The recent performance indicator first takes the most recent BPI for a given team, then subtracts the average BPI over time for the team, and finally divides that quantity by the average BPI over time for the team. A larger and more positive value indicates a team that has recently been performing well, while a larger and more negative value indicates a team that has recently been performing poorly.</p>
 
   </article>
   <!-- Presenter Notes -->
@@ -70,29 +70,7 @@
     <h2>The Data</h2>
   </hgroup>
   <article data-timings="">
-    <p>A quick look at the training data...</p>
-
-<pre><code class="r">bpi %&gt;% filter(BPI.RK &lt;= 351) %&gt;% group_by(TEAM) %&gt;%
-select(DATE, TEAM, BPI.RK, BPI) %&gt;%
-mutate(recentPerf=(BPI-mean(BPI))/mean(BPI)*100) %&gt;%
-filter(DATE==as.character(Sys.Date())) %&gt;% group_by() %&gt;% arrange(desc(recentPerf))
-</code></pre>
-
-<pre><code>## Source: local data frame [351 x 5]
-## 
-##          DATE           TEAM BPI.RK  BPI recentPerf
-## 1  2015-02-12         Marist    332 24.1  12.827715
-## 2  2015-02-12 Nicholls State    330 24.6  12.106942
-## 3  2015-02-12         Drexel    236 42.4  11.217977
-## 4  2015-02-12           IPFW    175 50.0  10.043284
-## 5  2015-02-12          Drake    267 38.2   9.602142
-## 6  2015-02-12      Milwaukee    261 39.2   8.437068
-## 7  2015-02-12           UTSA    210 46.3   8.068155
-## 8  2015-02-12  East Carolina    216 45.4   8.043789
-## 9  2015-02-12 UNC Greensboro    309 30.4   7.941768
-## 10 2015-02-12    Loyola (MD)    296 33.7   7.679199
-## ..        ...            ...    ...  ...        ...
-</code></pre>
+    <p><img src="assets/fig/unnamed-chunk-2-1.png" title="plot of chunk unnamed-chunk-2" alt="plot of chunk unnamed-chunk-2" style="display: block; margin: auto;" /></p>
 
   </article>
   <!-- Presenter Notes -->
