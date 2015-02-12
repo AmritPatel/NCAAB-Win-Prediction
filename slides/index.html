@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>The 2015 NCAA Division I Basketball Tournament</title>
+  <meta charset="utf-8">
+  <meta name="description" content="The 2015 NCAA Division I Basketball Tournament">
+  <meta name="author" content="Amrit D. Patel">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>The 2015 NCAA Division I Basketball Tournament</h1>
+    <h2>Predicting winners</h2>
+    <p>Amrit D. Patel<br/></p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>The NCAA Division I Basketball Tournament</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>You can learn about the tournament <a href="http://en.wikipedia.org/wiki/NCAA_Men%27s_Division_I_Basketball_Tournament">here</a>.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>The Prediction Model</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>This prediction model takes two teams as input and will output the predicted winner. The prediction model is trained with <a href="http://espn.go.com/mens-college-basketball/bpi">daily ESPN BPI data</a> and a recent performance indicator.</p>
+
+<p>The recent performance indicator takes the most recent BPI for a given team and divides it by the average BPI for that team over a given time period. A larger and more positive value indicates a team that has recently been performing well, while a larger and more negative value indicates a team that has recently been performing poorly.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>The Data</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>A quick look at the training data...</p>
+
+<pre><code class="r">bpi %&gt;% filter(BPI.RK &lt;= 351) %&gt;% group_by(TEAM) %&gt;%
+select(DATE, TEAM, BPI.RK, BPI) %&gt;%
+mutate(recentPerf=(BPI-mean(BPI))/mean(BPI)*100) %&gt;%
+filter(DATE==as.character(Sys.Date())) %&gt;% group_by() %&gt;% arrange(desc(recentPerf))
+</code></pre>
+
+<pre><code>## Source: local data frame [351 x 5]
+## 
+##          DATE           TEAM BPI.RK  BPI recentPerf
+## 1  2015-02-12         Marist    332 24.1  12.827715
+## 2  2015-02-12 Nicholls State    330 24.6  12.106942
+## 3  2015-02-12         Drexel    236 42.4  11.217977
+## 4  2015-02-12           IPFW    175 50.0  10.043284
+## 5  2015-02-12          Drake    267 38.2   9.602142
+## 6  2015-02-12      Milwaukee    261 39.2   8.437068
+## 7  2015-02-12           UTSA    210 46.3   8.068155
+## 8  2015-02-12  East Carolina    216 45.4   8.043789
+## 9  2015-02-12 UNC Greensboro    309 30.4   7.941768
+## 10 2015-02-12    Loyola (MD)    296 33.7   7.679199
+## ..        ...            ...    ...  ...        ...
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>The App</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>You can access the app <a href="http://amritpatel.shinyapps.io/Project">here</a>.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='The NCAA Division I Basketball Tournament'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='The Prediction Model'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='The Data'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='The App'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
