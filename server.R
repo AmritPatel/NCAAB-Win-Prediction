@@ -2,36 +2,58 @@ library(shiny)
 library(dplyr)
 library(RCurl)
 
+## Get data
+
+getBPI <- function() {
+  
+  # This is BPI data scraped daily from the ESPN website
+  
+  x <- getURL("https://raw.githubusercontent.com/AmritPatel/NCAAB-Win-Prediction/master/bpi.csv")
+  bpi <- tbl_df(read.csv(text = x, stringsAsFactors=FALSE))
+  bpi$BPI.RK <- as.numeric(bpi$BPI.RK)
+  bpi$BPI <- as.numeric(bpi$BPI)
+  
+  return(bpi)
+  
+}
+
+getTeams <- function() {
+
+  # Read in team map
+
+  x <- getURL("https://raw.githubusercontent.com/AmritPatel/NCAAB-Win-Prediction/master/teams.csv")
+  dfTeams <- read.csv(text = x, stringsAsFactors=FALSE)
+
+  return(dfTeams)
+
+}
+
+bpiData <- getBPI()
+dfTeams <- getTeams()
+
+## Train the model
+
 pNCAAb <- function() {
   
   library(randomForest)
   library(caret)
- 
+  
   x <- getURL("https://raw.githubusercontent.com/AmritPatel/NCAAB-Win-Prediction/master/scores.csv")
   training <- read.csv(text = x, stringsAsFactors=FALSE)
-
+  
   modFit <- train(tWin ~ tBPI + tRP + oBPI + oRP, method="rf", data=training)
-
+  
   return(modFit)
   
 }
 
-## Load the model
-
 model <- pNCAAb()  
 
-winning <- function(team, opp) {
-  
-  ### Load and process data
-  
-  # This is BPI data scraped daily from the ESPN website
+## Get prediction
 
-  x <- getURL("https://raw.githubusercontent.com/AmritPatel/NCAAB-Win-Prediction/master/bpi.csv")
-  bpi <- tbl_df(read.csv(text = x, stringsAsFactors=FALSE))
-  bpi$BPI.RK <- as.numeric(bpi$BPI.RK)
-  bpi$BPI <- as.numeric(bpi$BPI) 
-  
-  bpi <- bpi %>% filter(BPI.RK <= 351) %>% group_by(TEAM) %>% select(DATE, TEAM, BPI.RK, BPI)
+winning <- function(team, opp) {
+    
+  bpi <- bpiData %>% filter(BPI.RK <= 351) %>% group_by(TEAM) %>% select(DATE, TEAM, BPI.RK, BPI)
   
   recentPerf <-
     bpi %>% 
@@ -39,14 +61,7 @@ winning <- function(team, opp) {
     filter(DATE==as.character(bpi[nrow(bpi),1])) %>%
     group_by() %>%
     arrange(desc(recentPerf))
-  
-  ### Predict
-  
-  # Read in team map
-  
-  x <- getURL("https://raw.githubusercontent.com/AmritPatel/NCAAB-Win-Prediction/master/teams.csv")
-  dfTeams <- read.csv(text = x, stringsAsFactors=FALSE)
-  
+    
   # Get corresponding BPI data
   
   tESPN     <- dfTeams[dfTeams$Yahoo==team, 1]; tESPN <- recentPerf[recentPerf$TEAM==tESPN, ]
@@ -72,8 +87,29 @@ winning <- function(team, opp) {
   
 }
 
+## Define BPI plotting function
+
+plotBPI <- function(team, opp) {
+    
+  bpi <- bpiData %>%
+         filter(TEAM == dfTeams[dfTeams$Yahoo==team, 1] | TEAM == dfTeams[dfTeams$Yahoo==opp, 1]) %>%
+         group_by(TEAM) %>% 
+         select(DATE, TEAM, BPI.RK, BPI)
+  
+  ggplot(bpi, aes(x=DATE, y=BPI, color=TEAM)) + geom_point() + facet_wrap(~TEAM) + 
+  geom_smooth(method=lm, aes(group=1)) +
+  xlab("Date") +
+  ylab("BPI") +
+  ggtitle("BPI Over Time") +
+  theme(axis.ticks = element_blank(), axis.text.x = element_blank(), legend.position="none")
+  
+}
+
 shinyServer(    
   function(input, output) {
+    ## Output the BPI plots
+    output$img1 <- renderPlot({plotBPI(team=input$team1, opp=input$team2)})
+    ## Output the prediction
     output$prediction <- renderPrint({winning(team=input$team1, opp=input$team2)})
   }
 )
