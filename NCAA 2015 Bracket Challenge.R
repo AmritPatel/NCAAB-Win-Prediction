@@ -9,7 +9,8 @@ library(dplyr)
 # set_config(use_proxy(url="148.184.186.50",port=80,username="LANID",password="")) # only needed if at work
 
 # dir <- "C:/Users/axp13/Dropbox/NCAA Bracket Challenge"
-dir <- "~/Dropbox/NCAA Bracket Challenge"
+# dir <- "~/Dropbox/NCAA Bracket Challenge"
+dir <- "/home/ubuntu/NCAAB-Win-Prediction"
 setwd(dir)
 
 ### Step 1: Get BPI data
@@ -211,6 +212,8 @@ upsetAcc <- sum(upsets$upsetPred)/sum(upsets$upset) # calculate upset prediction
 misClass <- function(values,prediction){sum(((prediction > 0.5)*1) != values)/length(values)} # function calculating % misclassified
 modelAcc <- 1 - misClass(dailytWins, round(dailyPred)) # calculate model accuracy
 write(paste(as.character(Sys.Date()-1), modelAcc, bpiAcc, upsetAcc, sep=","), file="accuracy.out", append=TRUE)  # print prediction model accuracy to output w/ date
+
+save.image()
 
 return(paste(as.character(Sys.Date()-1), modelAcc, bpiAcc, upsetAcc, sep=","))
 

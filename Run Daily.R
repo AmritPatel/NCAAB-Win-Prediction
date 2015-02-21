@@ -1,5 +1,5 @@
 # source("C:/Users/axp13/Dropbox/NCAA Bracket Challenge/NCAA 2015 Bracket Challenge.R")
-source("~/Dropbox/NCAA Bracket Challenge/NCAA 2015 Bracket Challenge.R")
+source("/home/ubuntu/NCAAB-Win-Prediction/NCAA 2015 Bracket Challenge.R")
 
 predNCAAb()
 
