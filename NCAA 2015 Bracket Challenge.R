@@ -1,6 +1,3 @@
-predNCAAb <- 
-function() {
-
 library(caret)
 library(XML)
 library(httr)
@@ -215,6 +212,4 @@ write(paste(as.character(Sys.Date()-1), modelAcc, bpiAcc, upsetAcc, sep=","), fi
 
 save.image()
 
-return(paste(as.character(Sys.Date()-1), modelAcc, bpiAcc, upsetAcc, sep=","))
-
-}
+paste(as.character(Sys.Date()-1), modelAcc, bpiAcc, upsetAcc, sep=",")
