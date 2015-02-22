@@ -17,7 +17,8 @@ shinyUI(
       a(href="http://espn.go.com/mens-college-basketball/bpi", "daily ESPN BPI data"), " and a recent performance indicator."),
       
       # Return accuracy over time plot -- generated on-the-fly from server.R
-      imageOutput("img0", width="auto", inline=TRUE),
+      imageOutput("imgAcc1"),
+      imageOutput("imgAcc2"),
       br(),
             
       # Two input fields are added to pick teams
