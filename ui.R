@@ -15,11 +15,9 @@ shinyUI(
     sidebarPanel(
       p("This app takes two NCAA Division I basketball teams as input and will output the predicted winner. The prediction model is trained with",
       a(href="http://espn.go.com/mens-college-basketball/bpi", "daily ESPN BPI data"), " and a recent performance indicator."),
-      div(img(src="https://raw.githubusercontent.com/AmritPatel/NCAAB-Win-Prediction/master/NCAAb_prediction_model_accuracy.png",
-              width=775, height=581), style="text-align: center;"),
+      imageOutput("img0", width="auto", inline=TRUE),
       br(),
-      strong(em("\nWait (about 30 seconds) for the initial prediction to complete before selecting teams.")),
-      
+            
       # Two input fields are added
       selectInput(inputId="team1", label = h3("Pick Team 1"), 
                   choices = dfTeams$Yahoo, selected = "Florida"),

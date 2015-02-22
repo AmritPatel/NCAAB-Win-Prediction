@@ -1,6 +1,7 @@
 library(shiny)
 library(dplyr)
 library(RCurl)
+library(ggplot2)
 
 ## Get data
 
@@ -31,23 +32,15 @@ getTeams <- function() {
 bpiData <- getBPI()
 dfTeams <- getTeams()
 
-## Train the model
+## Load the model
 
-pNCAAb <- function() {
-  
-  library(randomForest)
-  library(caret)
-  
-  x <- getURL("https://raw.githubusercontent.com/AmritPatel/NCAAB-Win-Prediction/master/scores.csv")
-  training <- read.csv(text = x, stringsAsFactors=FALSE)
-  
-  modFit <- train(tWin ~ tBPI + tRP + oBPI + oRP, method="rf", data=training)
-  
-  return(modFit)
-  
-}
+# Download (from GitHub ) then load the .RData file containing latest trained model
 
-model <- pNCAAb()  
+library(downloader)
+
+download("https://raw.github.com/AmritPatel/NCAAB-Win-Prediction/master/.RData", ".RData", mode="wb")
+load(".RData")
+model <- modFit
 
 ## Get prediction
 
@@ -107,6 +100,46 @@ plotBPI <- function(team, opp) {
 
 shinyServer(    
   function(input, output) {
+    ## Output the accuracy plot
+    output$img0 <- renderImage({
+
+          library(reshape2)
+          library(gridExtra)
+          library(scales)
+          
+          x <- getURL("https://raw.githubusercontent.com/AmritPatel/NCAAB-Win-Prediction/master/accuracy.out")          
+          acc <- melt(read.csv(text = x), id.vars=1, measure.vars=c(2, 3, 4),
+                      variable.name = "Type", value.name = "Accuracy")
+          
+          p1 <- ggplot(data=acc %>% filter(as.Date(date) >= "2015-02-07"), aes(as.Date(date), Accuracy, group=Type)) + 
+                geom_line(aes(color=Type), size=2) +
+                xlab("") +
+                ylab("Accuracy") +
+                theme(legend.position="bottom")
+          
+          x <- getURL("https://raw.githubusercontent.com/AmritPatel/NCAAB-Win-Prediction/master/scores.csv")
+          scores <- tbl_df(read.csv(text = x))
+          sumScores <- tbl_df(scores) %>% group_by(date) %>% summarise(n=n())
+          
+          p2 <- ggplot(data=sumScores %>% filter(as.Date(date) >= "2015-02-07"), aes(as.Date(date), n)) +
+                geom_histogram(stat="identity") + 
+                xlab("Date") +
+                ylab("Number of Games Played")
+                    
+          # A temp file to save the output.
+          outfile <- tempfile(fileext='.png')
+          
+          png(outfile, height=400)
+          grid.arrange(p1, p2, nrow=2, main="Model Accuracy vs. Time")
+          dev.off()
+          
+          # Return a list containing the filename
+          list(src = outfile,
+               contentType = 'image/png',
+               height = 400,
+               alt = "This is alternate text")    
+    }, deleteFile = TRUE)
+    
     ## Output the BPI plots
     output$img1 <- renderPlot({plotBPI(team=input$team1, opp=input$team2)})
     ## Output the prediction
