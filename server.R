@@ -34,13 +34,13 @@ dfTeams <- getTeams()
 
 ## Load the model
 
-# Download (from GitHub ) then load the .RData file containing latest trained model
+# Download (from GitHub) then load the .RData file containing latest trained model
 
 library(downloader)
 
 download("https://raw.github.com/AmritPatel/NCAAB-Win-Prediction/master/.RData", ".RData", mode="wb")
 load(".RData")
-model <- modFit
+model <- modFit # modFit is the name of the object containing the model in .RData
 
 ## Get prediction
 
@@ -126,7 +126,7 @@ shinyServer(
                 xlab("Date") +
                 ylab("Number of Games Played")
                     
-          # A temp file to save the output.
+          # A temp file to save the output
           outfile <- tempfile(fileext='.png')
           
           png(outfile, height=400)
