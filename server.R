@@ -100,6 +100,7 @@ plotBPI <- function(team, opp) {
 
 shinyServer(    
   function(input, output) {
+    
     ## Output the accuracy plot
     output$img0 <- renderImage({
 
@@ -144,5 +145,6 @@ shinyServer(
     output$img1 <- renderPlot({plotBPI(team=input$team1, opp=input$team2)})
     ## Output the prediction
     output$prediction <- renderPrint({winning(team=input$team1, opp=input$team2)})
+    
   }
 )
